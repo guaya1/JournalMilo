@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milos Journal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #37474f;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+            padding: 25px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            font-weight: 500;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            font-weight: 300;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .app-body {
+            display: flex;
+            min-height: 500px;
+        }
+
+        .journal-list {
+            width: 35%;
+            background: #f8fdff;
+            border-right: 1px solid #e0f7fa;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .journal-entry {
+            width: 65%;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .journal-list h2 {
+            color: #00838f;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 1.5rem;
+        }
+
+        .entries {
+            list-style: none;
+        }
+
+        .entries li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entries li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .entry-date {
+            font-weight: 500;
+            color: #00838f;
+        }
+
+        .entry-preview {
+            font-size: 0.9rem;
+            color: #78909c;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+
+        .current-date {
+            color: #00838f;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #b2ebf2;
+            border-radius: 15px;
+            resize: none;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+            background: #f8fdff;
+        }
+
+        textarea:focus {
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.4);
+        }
+
+        .clear-btn {
+            background: #f5f5f5;
+            color: #78909c;
+        }
+
+        .clear-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .delete-btn {
+            background: #ffebee;
+            color: #e57373;
+        }
+
+        .delete-btn:hover {
+            background: #ffcdd2;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            color: #90a4ae;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #b2ebf2;
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4fc3f7;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .app-body {
+                flex-direction: column;
+            }
+            
+            .journal-list, .journal-entry {
+                width: 100%;
+            }
+            
+            .journal-list {
+                border-right: none;
+                border-bottom: 1px solid #e0f7fa;
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Milos Journal Space</h1>
+            <div class="header-subtitle">Take a big breath</div>
+        </header>
+        
+        <div class="app-body">
+            <div class="journal-list">
+                <h2>Journals</h2>
+                <ul class="entries">
+                    <!-- Journal entries will be listed here -->
+                </ul>
+            </div>
+            
+            <div class="journal-entry">
+                <div class="current-date" id="current-date">Monday, January 1, 2023</div>
+                <textarea id="journal-text" placeholder="Write your thoughts here..."></textarea>
+                <div class="actions">
+                    <button class="clear-btn" id="clear-btn">
+                        <i class="fas fa-eraser"></i> Clear
+                    </button>
+                    <button class="save-btn" id="save-btn">
+                        <i class="fas fa-save"></i> Save Journal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Journal saved successfully!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const journalText = document.getElementById('journal-text');
+            const saveBtn = document.getElementById('save-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const entriesList = document.querySelector('.entries');
+            const currentDateEl = document.getElementById('current-date');
+            const notification = document.getElementById('notification');
+            
+            // Update current date
+            function updateDate() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                currentDateEl.textContent = now.toLocaleDateString('en-US', options);
+            }
+            
+            updateDate();
+            
+            // Load entries from localStorage
+            function loadEntries() {
+                const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+                entriesList.innerHTML = '';
+                
+                if (entries.length === 0) {
+                    entriesList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-feather-alt"></i>
+                            <p>No entries yet</p>
+                            <p>Start writing to see your entries here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort entries by date (newest first)
+                entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                entries.forEach(entry => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="entry-date">${formatDate(entry.date)}</div>
+                        <div class="entry-preview">${entry.text.substring(0, 30)}...</div>
+                        <button class="delete-btn" data-id="${entry.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    
+                    li.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('delete-btn')) {
+                            journalText.value = entry.text;
+                        }
+                    });
+                    
+                    const deleteBtn = li.querySelector('.delete-btn');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteEntry(entry.id);
+                    });
+                    
+                    entriesList.appendChild(li);
+                });
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            
+            // Save entry
+            saveBtn.addEventListener('click', function() {
+                const text = journalText.value.trim();
+                if (text === '') {
+                    showNotification('Please write something before saving', true);
+                    return;
+                }
+                
+                const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+                const now = new Date();
+                
+                // Check if an entry already exists for today
+                const today = now.toDateString();
+                const existingIndex = entries.findIndex(entry => {
+                    return new Date(entry.date).toDateString() === today;
+                });
+                
+                if (existingIndex !== -1) {
+                    // Update existing entry
+                    entries[existingIndex].text = text;
+                    entries[existingIndex].date = now.toISOString();
+                } else {
+                    // Create new entry
+                    entries.push({
+                        id: Date.now(),
+                        date: now.toISOString(),
+                        text: text
+                    });
+                }
+                
+                localStorage.setItem('journalEntries', JSON.stringify(entries));
+                loadEntries();
+                journalText.value = '';
+                showNotification('Entry saved successfully!');
+            });
+            
+            // Clear textarea
+            clearBtn.addEventListener('click', function() {
+                journalText.value = '';
+                journalText.focus();
+            });
+            
+            // Delete entry
+            function deleteEntry(id) {
+                const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+                const updatedEntries = entries.filter(entry => entry.id !== id);
+                localStorage.setItem('journalEntries', JSON.stringify(updatedEntries));
+                loadEntries();
+                
+                // Clear the textarea if the deleted entry was being viewed
+                journalText.value = '';
+            }
+            
+            // Show notification
+            function showNotification(message, isError = false) {
+                notification.textContent = message;
+                notification.style.background = isError ? '#e57373' : '#4fc3f7';
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Initial load
+            loadEntries();
+        });
+    </script>
+</body>
+</html>
